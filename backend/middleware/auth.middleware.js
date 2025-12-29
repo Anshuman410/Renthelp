@@ -1,54 +1,33 @@
 const jwt = require("jsonwebtoken");
 
 /**
- * 🔐 AUTH MIDDLEWARE
- * Token verify karta hai
+ * 🔐 JWT Authentication Middleware
+ * Protects private routes
  */
-const protect = (req, res, next) => {
-  let token;
+module.exports = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-  // Token header se lo: Authorization: Bearer <token>
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // token se user info request mein attach
-      req.user = decoded;
-
-      next();
-    } catch (error) {
-      return res.status(401).json({
-        message: "Invalid or expired token"
-      });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json({ message: "Access denied. Token missing." });
     }
-  } else {
-    return res.status(401).json({
-      message: "No token provided"
-    });
-  }
-};
 
-/**
- * 🛡️ ROLE BASED ACCESS
- * Example: roleProtect("admin")
- */
-const roleProtect = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: "Access denied"
-      });
-    }
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach user info to request
+    req.user = {
+      id: decoded.id,
+      role: decoded.role
+    };
+
     next();
-  };
-};
-
-module.exports = {
-  protect,
-  roleProtect
+  } catch (err) {
+    return res
+      .status(401)
+      .json({ message: "Invalid or expired token" });
+  }
 };
