@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register | RentHelp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar">
+    <div class="logo">RentHelp</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <!-- ================= REGISTER SECTION ================= -->
+  <section class="full-bg"
+    style="background-image:url('https://images.unsplash.com/photo-1493809842364-78817add7ffb');">
+
+    <div class="overlay-content">
+      <div class="glass-card">
+
+        <h2>Create Your Account</h2>
+        <p class="subtitle">Join RentHelp to find or manage rentals</p>
+
+        <input type="text" id="name" placeholder="Full Name" />
+        <input type="email" id="email" placeholder="Email Address" />
+        <input type="password" id="password" placeholder="Password (min 6 characters)" />
+
+        <select id="role">
+          <option value="">Select Role</option>
+          <option value="tenant">Tenant</option>
+          <option value="landlord">Landlord</option>
+        </select>
+
+        <button onclick="register()">Register</button>
+
+        <p style="margin-top:15px; text-align:center;">
+          Already have an account?
+          <a href="login.html">Login</a>
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCRIPT ================= -->
+  <script>
+    const API_BASE = "https://renthelp.onrender.com";
+
+    async function register() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+
+      if (!name || !email || !password || !role) {
+        alert("All fields are required");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, email, password, role })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Registration failed");
+          return;
+        }
+
+        alert("Registration successful! Please login.");
+        window.location.href = "login.html";
+
+      } catch (err) {
+        console.error(err);
+        alert("Server error");
+      }
+    }
+  </script>
+
+</body>
+</html>
