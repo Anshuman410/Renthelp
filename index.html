@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <title>RentHelp | Find Your Perfect Rental</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- ================= NAVBAR ================= -->
   <header class="navbar">
     <div class="logo">RentHelp</div>
     <nav id="navLinks">
@@ -18,40 +16,44 @@
     </nav>
   </header>
 
-  <!-- ================= HERO / SEARCH ================= -->
   <section class="full-bg"
-    style="background-image:url('https://images.unsplash.com/photo-1505691938895-1758d7feb511');">
+    style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');">
 
     <div class="overlay-content">
-      <div class="glass-card extra-large">
+      <div class="glass-card extra-large" style="text-align: center;">
 
-        <h1>Find Your Next Home</h1>
-        <p class="subtitle">Luxury & affordable rentals in one place</p>
+        <h1 style="font-size: 3.5rem; color: #ffd479; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+            Welcome to RentHelp
+        </h1>
 
-        <!-- ================= SEARCH ================= -->
-        <div class="search-box">
-          <input type="text" id="location" placeholder="Location / Landmark" />
-          <input type="number" id="minPrice" placeholder="Min Price" />
-          <input type="number" id="maxPrice" placeholder="Max Price" />
-          <button onclick="loadProperties()">Search</button>
+        <p style="font-size: 1.3rem; line-height: 1.8; color: #fff; max-width: 850px; margin: 0 auto 40px auto; opacity: 0.9; font-weight: 300;">
+            We believe everyone deserves a place to call home. <b>RentHelp</b> has successfully 
+            bridged the gap for over <b>5,000+ happy tenants</b> by connecting them with 
+            verified, reliable landlords. Our mission is to provide a transparent, 
+            hassle-free rental experience that puts your comfort and security first.
+        </p>
+
+        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="font-weight: 400; color: #ffd479;">
+                Ready to find your perfect sanctuary?
+            </h3>
+            <p style="margin-top: 10px; font-size: 1.1rem; opacity: 0.8;">
+                Please <b>Login</b> or <b>Register</b> using the navigation menu above to access our exclusive property listings and start your journey today.
+            </p>
         </div>
-
-        <!-- ================= PROPERTY LIST ================= -->
-        <div id="properties" class="grid"></div>
 
       </div>
     </div>
   </section>
 
-  <!-- ================= SCRIPTS ================= -->
   <script>
-    const API_BASE = "https://renthelp.onrender.com";
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    /* ================= NAV UPDATE ================= */
+    /* ================= NAV UPDATE LOGIC ================= */
     const nav = document.getElementById("navLinks");
 
+    // Updates the navbar if the user is already logged in
     if (token && role) {
       if (role === "tenant") {
         nav.innerHTML = `
@@ -71,70 +73,13 @@
       }
     }
 
+    /* ================= LOGOUT FUNCTION ================= */
     function logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       window.location.href = "login.html";
     }
-
-    /* ================= LOAD PROPERTIES ================= */
-    async function loadProperties() {
-      const location = document.getElementById("location").value;
-      const minPrice = document.getElementById("minPrice").value;
-      const maxPrice = document.getElementById("maxPrice").value;
-
-      let url = `${API_BASE}/api/properties?`;
-      if (location) url += `location=${encodeURIComponent(location)}&`;
-      if (minPrice) url += `minPrice=${minPrice}&`;
-      if (maxPrice) url += `maxPrice=${maxPrice}&`;
-
-      try {
-        const res = await fetch(url);
-        const properties = await res.json();
-        renderProperties(properties);
-      } catch (err) {
-        console.error(err);
-        alert("Server error");
-      }
-    }
-
-    /* ================= RENDER ================= */
-    function renderProperties(properties) {
-      const container = document.getElementById("properties");
-      container.innerHTML = "";
-
-      if (!properties.length) {
-        container.innerHTML = "<p>No available properties found.</p>";
-        return;
-      }
-
-      properties.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "property-card";
-
-        card.innerHTML = `
-          <h3>${p.title}</h3>
-          <p><b>Location:</b> ${p.location}</p>
-          <p><b>Rent:</b> ₹${p.price}</p>
-          <p>${p.description || ""}</p>
-          <button onclick="viewDetails('${p._id}')">
-            View Details
-          </button>
-        `;
-
-        container.appendChild(card);
-      });
-    }
-
-    function viewDetails(id) {
-      window.location.href = `property-details.html?id=${id}`;
-    }
-
-    // Initial load
-    loadProperties();
   </script>
 
-  
 </body>
 </html>
-
