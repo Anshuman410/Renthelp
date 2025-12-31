@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Landlord Dashboard | RentHelp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ================= PROTECT LANDLORD ================= -->
+  <script>
+    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "landlord") {
+      alert("Landlord access only");
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar">
+    <div class="logo">RentHelp <span>| Landlord</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="full-bg"
+    style="background-image:url('https://images.unsplash.com/photo-1501183638710-841dd1904471');">
+
+    <div class="overlay-content">
+      <div class="glass-card extra-large">
+
+        <h1>Landlord Dashboard</h1>
+        <p class="subtitle">Manage your rental properties</p>
+
+        <!-- ================= ADD PROPERTY ================= -->
+        <h2>Add New Property</h2>
+
+        <div class="form-grid">
+          <input type="text" id="title" placeholder="Property Title" />
+          <input type="text" id="location" placeholder="Location / Landmark" />
+          <input type="number" id="price" placeholder="Monthly Rent (₹)" />
+          <textarea id="description" placeholder="Description (optional)"></textarea>
+          <button onclick="addProperty()">Add Property</button>
+        </div>
+
+        <!-- ================= MY PROPERTIES ================= -->
+        <h2 style="margin-top:40px;">My Properties</h2>
+        <div id="myProperties" class="grid"></div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="js/landlord.client.js"></script>
+
+</body>
+</html>

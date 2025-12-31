@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel | RentHelp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ================= PROTECT ADMIN ================= -->
+  <script>
+    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "admin") {
+      alert("Admin access only");
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar">
+    <div class="logo">RentHelp <span>| Admin</span></div>
+    <nav>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <!-- ================= ADMIN SECTION ================= -->
+  <section class="full-bg"
+    style="background-image:url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267');">
+
+    <div class="overlay-content">
+
+      <div class="glass-card extra-large">
+
+        <h1>Admin Dashboard</h1>
+        <p class="subtitle">Platform Control & Moderation</p>
+
+        <!-- ================= USERS ================= -->
+        <h2>All Users</h2>
+        <div id="users" class="grid"></div>
+
+        <!-- ================= PROPERTIES ================= -->
+        <h2 style="margin-top:40px;">All Properties</h2>
+        <div id="properties" class="grid"></div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="js/auth.client.js"></script>
+  <script src="js/admin.client.js"></script>
+
+</body>
+</html>
