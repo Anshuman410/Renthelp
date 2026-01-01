@@ -4,58 +4,48 @@
   <meta charset="UTF-8" />
   <title>Landlord Dashboard | RentHelp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- ================= PROTECT LANDLORD ================= -->
-  <script>
-    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "landlord") {
-      alert("Landlord access only");
-      window.location.href = "login.html";
-    }
-  </script>
-
-  <!-- ================= NAVBAR ================= -->
   <header class="navbar">
-    <div class="logo">RentHelp <span>| Landlord</span></div>
+    <div class="logo">RentHelp</div>
     <nav>
       <a href="index.html">Home</a>
       <a href="#" onclick="logout()">Logout</a>
     </nav>
   </header>
 
-  <!-- ================= DASHBOARD ================= -->
-  <section class="full-bg"
-    style="background-image:url('https://images.unsplash.com/photo-1501183638710-841dd1904471');">
+  <section class="dashboard-container">
+    <div class="glass-card extra-large">
+      <h1 style="color: #ffd479; margin-bottom: 20px;">Landlord Dashboard</h1>
 
-    <div class="overlay-content">
-      <div class="glass-card extra-large">
+      <div class="add-property-form" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 40px;">
+        <h2 style="color: #fff; margin-bottom: 15px;">List a New Property</h2>
+        <div class="grid-form" style="display: grid; gap: 15px;">
+          <input type="text" id="title" placeholder="Property Title (e.g. 2BHK Luxury Flat)" required>
+          <input type="text" id="location" placeholder="Location (e.g. Mumbai, Bandra)" required>
+          <input type="number" id="price" placeholder="Monthly Rent (₹)" required>
+          <textarea id="description" placeholder="Short Description" rows="3"></textarea>
+          
+          <div style="text-align: left;">
+            <label style="color: #ffd479; display: block; margin-bottom: 5px; font-size: 0.9rem;">Upload Property Image:</label>
+            <input type="file" id="propertyImage" accept="image/*" style="color: white; background: none; border: 1px solid rgba(255,255,255,0.2); padding: 8px; width: 100%; border-radius: 5px;">
+          </div>
 
-        <h1>Landlord Dashboard</h1>
-        <p class="subtitle">Manage your rental properties</p>
-
-        <!-- ================= ADD PROPERTY ================= -->
-        <h2>Add New Property</h2>
-
-        <div class="form-grid">
-          <input type="text" id="title" placeholder="Property Title" />
-          <input type="text" id="location" placeholder="Location / Landmark" />
-          <input type="number" id="price" placeholder="Monthly Rent (₹)" />
-          <textarea id="description" placeholder="Description (optional)"></textarea>
-          <button onclick="addProperty()">Add Property</button>
+          <button onclick="addProperty()" class="btn-primary" style="background: #c9a24d; color: #000; font-weight: 700; border: none; padding: 12px; border-radius: 5px; cursor: pointer;">Post Property</button>
         </div>
+      </div>
 
-        <!-- ================= MY PROPERTIES ================= -->
-        <h2 style="margin-top:40px;">My Properties</h2>
-        <div id="myProperties" class="grid"></div>
+      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px;">
 
+      <h2 style="color: #fff; margin-bottom: 20px;">Your Listings</h2>
+      <div id="myProperties" class="grid">
+        <p style="color: #ccc;">Loading your properties...</p>
       </div>
     </div>
   </section>
 
-  <!-- ================= SCRIPTS ================= -->
   <script src="js/landlord.client.js"></script>
 
 </body>
