@@ -1,47 +1,13 @@
 const mongoose = require("mongoose");
 
-/**
- * 🏠 PROPERTY SCHEMA
- * Created by Landlord
- */
-const propertySchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true
-    },
+const PropertySchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  location: { type: String, required: true },
+  price: { type: Number, required: true },
+  description: { type: String },
+  imageUrl: { type: String, default: "" }, // ✨ New Field for Cloudinary URL
+  isOccupied: { type: Boolean, default: false },
+  landlord: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
+}, { timestamps: true });
 
-    description: {
-      type: String,
-      required: true
-    },
-
-    location: {
-      type: String,
-      required: true,
-      index: true
-    },
-
-    price: {
-      type: Number,
-      required: true
-    },
-
-    landlord: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-
-    isOccupied: {
-      type: Boolean,
-      default: false
-    }
-  },
-  {
-    timestamps: true
-  }
-);
-
-module.exports = mongoose.model("Property", propertySchema);
+module.exports = mongoose.model("Property", PropertySchema);
