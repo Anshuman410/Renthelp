@@ -1,29 +1,26 @@
-// ===============================
-// FINAL CORRECTED TENANT CLIENT
-// ===============================
+// ==========================================
+// TENANT CLIENT LOGIC (Cloudinary Image Version)
+// ==========================================
 
-// Standardized API_BASE to include /api to match server.js
 const API_BASE = "https://renthelp.onrender.com/api"; 
 const token = localStorage.getItem("token");
 
 // -------------------------------
-// AUTH CHECK (TENANT ONLY)
+// 1. AUTH PROTECTION
 // -------------------------------
-// Prevents dashboard access if the user is not a logged-in tenant
 if (!token || localStorage.getItem("role") !== "tenant") {
   alert("Tenant login required");
   window.location.href = "login.html";
 }
 
 // -------------------------------
-// LOAD AVAILABLE PROPERTIES
+// 2. LOAD PROPERTIES WITH IMAGES
 // -------------------------------
 async function loadProperties() {
   const location = document.getElementById("location")?.value || "";
   const minPrice = document.getElementById("minPrice")?.value || "";
   const maxPrice = document.getElementById("maxPrice")?.value || "";
 
-  // Fixed plural 'properties' to match backend property.routes.js
   let url = `${API_BASE}/properties?`;
   if (location) url += `location=${encodeURIComponent(location)}&`;
   if (minPrice) url += `minPrice=${minPrice}&`;
@@ -31,10 +28,7 @@ async function loadProperties() {
 
   try {
     const res = await fetch(url, {
-      headers: {
-        // Required for auth.middleware.js
-        "Authorization": "Bearer " + token
-      }
+      headers: { "Authorization": "Bearer " + token }
     });
 
     if (!res.ok) {
@@ -47,12 +41,11 @@ async function loadProperties() {
 
   } catch (err) {
     console.error("TENANT LOAD ERROR:", err);
-    alert("Server error: Could not fetch properties.");
   }
 }
 
 // -------------------------------
-// RENDER PROPERTIES TO GRID
+// 3. RENDER PROPERTY CARDS
 // -------------------------------
 function renderProperties(properties) {
   const container = document.getElementById("properties");
@@ -61,38 +54,44 @@ function renderProperties(properties) {
   container.innerHTML = "";
 
   if (!properties.length) {
-    container.innerHTML = "<p>No available properties found.</p>";
+    container.innerHTML = "<p>No available properties found matching your criteria.</p>";
     return;
   }
 
   properties.forEach(p => {
     const card = document.createElement("div");
-    card.className = "property-card"; // Matches style.css
+    card.className = "property-card";
 
+    // ✨ Displaying the Real Image from Cloudinary
     card.innerHTML = `
-      <h3>${p.title}</h3>
-      <p><b>Location:</b> ${p.location}</p>
-      <p><b>Rent:</b> ₹${p.price}</p>
-      <p>${p.description || ""}</p>
-      <button onclick="viewDetails('${p._id}')">View Details</button>
+      <img src="${p.imageUrl || 'https://via.placeholder.com/400x250?text=Property+Image'}" 
+           alt="Property" 
+           style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+      
+      <div style="padding: 15px;">
+        <h3 style="color: #ffd479; margin-bottom: 10px;">${p.title}</h3>
+        <p><b>📍 Location:</b> ${p.location}</p>
+        <p><b>💰 Rent:</b> ₹${p.price} / month</p>
+        <p style="font-size: 0.9rem; color: #ccc; margin-top: 5px;">${p.description ? p.description.substring(0, 60) + '...' : 'No description.'}</p>
+        
+        <button onclick="viewDetails('${p._id}')" style="width: 100%; margin-top: 15px; background: #c9a24d; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+            View Details
+        </button>
+      </div>
     `;
 
     container.appendChild(card);
   });
 }
 
-// Navigates to the details page with the property ID
 function viewDetails(id) {
   window.location.href = `property-details.html?id=${id}`;
 }
 
-// -------------------------------
-// LOGOUT
-// -------------------------------
 function logout() {
-  localStorage.clear(); // Clears token and role
+  localStorage.clear();
   window.location.href = "login.html";
 }
 
-// Initial load for tenant dashboard upon script entry
+// Initial load
 loadProperties();
