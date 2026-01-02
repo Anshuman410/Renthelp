@@ -8,117 +8,135 @@
 </head>
 <body>
 
-  <script>
-    if (!localStorage.getItem("token") || localStorage.getItem("role") !== "tenant") {
-      alert("Tenant login required");
-      window.location.href = "login.html";
-    }
-  </script>
-
   <header class="navbar">
     <div class="logo">RentHelp</div>
     <nav>
-      <a href="index.html">Home</a>
       <a href="tenant-dashboard.html">Dashboard</a>
       <a href="#" onclick="logout()">Logout</a>
     </nav>
   </header>
 
-  <section class="full-bg" style="background-image:url('https://images.unsplash.com/photo-1501183638710-841dd1904471');">
+  <section class="full-bg" id="detailBg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750');">
     <div class="overlay-content">
-      <div class="glass-card large">
-        <h1 id="title">Loading...</h1>
-        <p class="subtitle" id="location"></p>
-        <p><b>Monthly Rent:</b> ₹<span id="price"></span></p>
-        <p id="description"></p>
-        <button id="interestBtn" onclick="sendInterest()">I'm Interested</button>
+      
+      <div id="loadingState" class="glass-card">
+        <h2 style="color: #ffd479;">Loading Property Details...</h2>
+        <p>Please wait while we fetch the latest information.</p>
       </div>
+
+      <div id="detailsCard" class="glass-card extra-large" style="display: none; text-align: left;">
+        <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start;">
+          
+          <div style="flex: 1; min-width: 300px;">
+            <img id="propImage" src="" alt="Property" style="width: 100%; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          </div>
+
+          <div style="flex: 1; min-width: 300px;">
+            <h1 id="propTitle" style="color: #ffd479; font-size: 2.5rem; margin-bottom: 10px;">Property Title</h1>
+            <p id="propLocation" style="font-size: 1.2rem; margin-bottom: 20px;">📍 Location</p>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <h2 id="propPrice" style="color: #fff; margin-bottom: 10px;">Monthly Rent: ₹0</h2>
+              <p id="propDesc" style="color: #ccc; line-height: 1.8;">Description goes here...</p>
+            </div>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+              <h3 style="color: #ffd479; margin-bottom: 10px;">Landlord Information</h3>
+              <p>👤 <span id="landlordName">Name</span></p>
+              <p style="font-size: 0.8rem; color: #aaa;">*Contact details shared after you show interest.</p>
+            </div>
+
+            <button onclick="expressInterest()" class="btn-primary" style="margin-top: 30px; font-size: 1.1rem;">
+              I'm Interested
+            </button>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </section>
 
   <script>
-    // ✅ STANDARDIZED API_BASE
-    const API_BASE = "https://renthelp.onrender.com/api"; 
+    const API_BASE = "https://renthelp.onrender.com/api";
     const token = localStorage.getItem("token");
 
-    const params = new URLSearchParams(window.location.search);
-    const propertyId = params.get("id");
+    // Get Property ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('id');
 
-    if (!propertyId) {
-      alert("Property not found");
-      window.location.href = "index.html";
-    }
-
-    /* ================= LOAD PROPERTY DETAILS ================= */
-    async function loadDetails() {
-      try {
-        // Backend route: GET /api/properties/:id
-        const res = await fetch(`${API_BASE}/properties/${propertyId}`, {
-          headers: {
-            "Authorization": "Bearer " + token
-          }
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          alert(data.message || "Property not available");
-          window.location.href = "tenant-dashboard.html";
-          return;
+    async function loadPropertyDetails() {
+        if (!propertyId) {
+            alert("Property ID not found in URL!");
+            window.location.href = "tenant-dashboard.html";
+            return;
         }
 
-        const p = await res.json();
+        try {
+            // Fetching single property from the new backend route
+            const res = await fetch(`${API_BASE}/properties/${propertyId}`, {
+                headers: { "Authorization": "Bearer " + token }
+            });
 
-        document.getElementById("title").innerText = p.title;
-        document.getElementById("location").innerText = p.location;
-        document.getElementById("price").innerText = p.price;
-        document.getElementById("description").innerText = p.description || "No description provided.";
+            if (!res.ok) throw new Error("Property not found");
 
-      } catch (err) {
-        console.error("LOAD DETAILS ERROR:", err);
-        alert("Server error");
-      }
+            const p = await res.json();
+
+            // Mapping Data to HTML
+            document.getElementById("propTitle").innerText = p.title;
+            document.getElementById("propLocation").innerText = `📍 ${p.location}`;
+            document.getElementById("propPrice").innerText = `Monthly Rent: ₹${p.price}`;
+            document.getElementById("propDesc").innerText = p.description || "No detailed description provided for this property.";
+            document.getElementById("landlordName").innerText = p.landlord ? p.landlord.name : "Unknown Landlord";
+            
+            const imgElement = document.getElementById("propImage");
+            const bgElement = document.getElementById("detailBg");
+            const fallbackImg = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750';
+
+            imgElement.src = p.imageUrl || fallbackImg;
+            bgElement.style.backgroundImage = `url('${p.imageUrl || fallbackImg}')`;
+
+            // UI Toggle
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("detailsCard").style.display = "block";
+
+        } catch (err) {
+            console.error("LOAD ERROR:", err);
+            alert("Failed to load property details. It might have been deleted.");
+            window.location.href = "tenant-dashboard.html";
+        }
     }
 
-    /* ================= SEND INTEREST ================= */
-    async function sendInterest() {
-      try {
-        // Backend route: POST /api/interests/:propertyId
-        const res = await fetch(`${API_BASE}/interests/${propertyId}`, {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-          }
-        });
+    async function expressInterest() {
+        try {
+            const res = await fetch(`${API_BASE}/interests`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ propertyId: propertyId })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (!res.ok) {
-          // Handles "already showed interest" or "occupied" errors from backend
-          alert(data.message || "Failed to send interest");
-          return;
+            if (res.ok) {
+                alert("Success! Your interest has been sent to the landlord. They will contact you soon.");
+            } else {
+                alert(data.message || "You have already shown interest in this property.");
+            }
+        } catch (err) {
+            console.error("INTEREST ERROR:", err);
+            alert("Server error. Please try again later.");
         }
-
-        alert("Interest sent successfully!");
-        const btn = document.getElementById("interestBtn");
-        btn.disabled = true;
-        btn.innerText = "Interest Sent";
-        btn.style.opacity = "0.6";
-        btn.style.cursor = "not-allowed";
-
-      } catch (err) {
-        console.error("SEND INTEREST ERROR:", err);
-        alert("Server error");
-      }
     }
 
     function logout() {
-      localStorage.clear();
-      window.location.href = "login.html";
+        localStorage.clear();
+        window.location.href = "login.html";
     }
 
-    // Initial load
-    loadDetails();
+    window.onload = loadPropertyDetails;
   </script>
 </body>
 </html>
