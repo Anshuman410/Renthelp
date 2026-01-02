@@ -1,255 +1,231 @@
-/* ===============================
-   GLOBAL RESET & BASE
-=============================== */
+/* ==========================================
+   RENTHELP PREMIUM GLOBAL STYLES
+   ========================================== */
+
+:root {
+  --primary-gold: #c9a24d;
+  --light-gold: #ffd479;
+  --dark-bg: #0f0f0f;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --text-white: #ffffff;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-html, body {
-  height: 100%;
-  background: #000;
-  color: #fff;
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-white);
+  overflow-x: hidden;
 }
 
-/* ===============================
-   NAVBAR
-=============================== */
-.navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 70px;
-  padding: 0 40px;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1000;
-}
-
-.navbar .logo {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.navbar .logo span {
-  font-weight: 300;
-  opacity: 0.8;
-}
-
-.navbar nav a {
-  margin-left: 25px;
-  text-decoration: none;
-  color: #fff;
-  font-size: 14px;
-  opacity: 0.85;
-  transition: 0.3s;
-}
-
-.navbar nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-
-/* ===============================
-   FULL BACKGROUND SECTION
-=============================== */
+/* --- Full Background Section --- */
 .full-bg {
   min-height: 100vh;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  padding-top: 70px;
 }
 
 .full-bg::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
 }
 
 .overlay-content {
   position: relative;
   z-index: 2;
-  min-height: calc(100vh - 70px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
 }
 
-/* ===============================
-   GLASS CARD
-=============================== */
+/* --- Glassmorphism Cards --- */
 .glass-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  border-radius: 16px;
-  padding: 35px 30px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  max-width: 500px;
+  margin: 0 auto;
+  animation: fadeIn 0.8s ease-out;
 }
 
-.glass-card.large {
-  max-width: 700px;
+.extra-large {
+  max-width: 1000px;
 }
 
-.glass-card.extra-large {
-  max-width: 1100px;
+/* --- Navbar Styling --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  background: rgba(15, 15, 15, 0.95);
+  position: fixed;
+  top: 0; width: 100%;
+  z-index: 100;
+  border-bottom: 1px solid var(--glass-border);
 }
 
-.glass-card h1,
-.glass-card h2 {
+.logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--light-gold);
+  letter-spacing: 1px;
+}
+
+nav a {
+  color: var(--text-white);
+  text-decoration: none;
+  margin-left: 20px;
   font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-bottom: 25px;
-}
-
-/* ===============================
-   INPUTS & FORMS
-=============================== */
-.glass-card input,
-.glass-card select,
-.glass-card textarea {
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-}
-
-.glass-card textarea {
-  resize: none;
-  height: 90px;
-}
-
-.glass-card button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: #c9a24d;
-  color: #000;
-  font-weight: 600;
-  cursor: pointer;
   transition: 0.3s;
 }
 
-.glass-card button:hover {
-  background: #e1b860;
+nav a:hover {
+  color: var(--primary-gold);
 }
 
-/* ===============================
-   SEARCH BOX
-=============================== */
-.search-box {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 25px;
-}
-
-.search-box input,
-.search-box button {
-  padding: 12px;
+/* --- Form Elements --- */
+input, select, textarea {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+input:focus {
+  border-color: var(--primary-gold);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary {
+  background: var(--primary-gold);
+  color: black;
+  font-weight: 700;
   border: none;
-}
-
-.search-box button {
-  background: #c9a24d;
-  font-weight: 600;
+  padding: 14px;
+  width: 100%;
+  border-radius: 8px;
   cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s ease;
 }
 
-/* ===============================
-   GRID & CARDS
-=============================== */
+.btn-primary:hover {
+  background: var(--light-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(201, 162, 77, 0.4);
+}
+
+/* --- Property Grid & Cards --- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  padding: 20px 0;
 }
 
 .property-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 12px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: 0.3s;
 }
 
 .property-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  transform: translateY(-10px);
+  border-color: var(--primary-gold);
 }
 
-.property-card h3 {
-  margin-bottom: 6px;
-  font-weight: 500;
+/* ==========================================
+   ✨ STYLISH MODAL (POPUP) ANIMATIONS
+   ========================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px); /* Deep blur effect */
+  -webkit-backdrop-filter: blur(12px);
+  animation: fadeIn 0.4s ease;
 }
 
-.property-card p {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-bottom: 6px;
+.modal-content {
+  background: #141414;
+  margin: 5% auto;
+  padding: 40px;
+  border: 1px solid var(--primary-gold);
+  width: 90%;
+  max-width: 550px;
+  border-radius: 25px;
+  color: white;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.property-card button {
-  margin-top: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #c9a24d;
-  font-size: 13px;
-  cursor: pointer;
+.tc-body {
+  max-height: 350px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding-right: 15px;
+  text-align: left;
+  line-height: 1.7;
 }
 
-/* ===============================
-   FORM GRID (LANDLORD)
-=============================== */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 25px;
+/* Custom Scrollbar for Modal */
+.tc-body::-webkit-scrollbar {
+  width: 6px;
+}
+.tc-body::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+.tc-body::-webkit-scrollbar-thumb {
+  background: var(--primary-gold);
+  border-radius: 10px;
 }
 
-/* ===============================
-   LINKS
-=============================== */
-a {
-  color: #ffd479;
-  text-decoration: none;
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-a:hover {
-  text-decoration: underline;
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* ===============================
-   RESPONSIVE
-=============================== */
-@media (max-width: 600px) {
-  .navbar {
-    padding: 0 20px;
-  }
-
-  .glass-card.extra-large {
-    padding: 25px 20px;
-  }
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .logo { font-size: 1.4rem; }
+  .glass-card { padding: 25px; }
+  .modal-content { margin: 15% auto; padding: 25px; }
 }
