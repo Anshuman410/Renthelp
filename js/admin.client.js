@@ -1,148 +1,64 @@
-// ===============================
-// ADMIN CLIENT SIDE LOGIC
-// ===============================
-
-const API_BASE = "https://renthelp.onrender.com";
+const API_BASE = "https://renthelp.onrender.com/api"; 
 const token = localStorage.getItem("token");
 
-// -------------------------------
-// AUTH CHECK
-// -------------------------------
-if (!token) {
-  alert("Admin login required");
-  window.location.href = "login.html";
+if (!token || localStorage.getItem("role") !== "admin") {
+    window.location.href = "login.html";
 }
 
-// -------------------------------
-// FETCH ALL USERS
-// -------------------------------
-async function fetchUsers() {
-  try {
-    const res = await fetch(`${API_BASE}/api/admin/users`, {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
+async function loadUsers() {
+    try {
+        const res = await fetch(`${API_BASE}/admin/users`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const users = await res.json();
+        
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = "";
 
-    if (!res.ok) {
-      alert("Unauthorized access");
-      return;
+        users.forEach(user => {
+            // Admin khud ko delete na kar sake isliye check
+            const deleteBtn = user.role !== 'admin' 
+                ? `<button onclick="deleteUser('${user._id}')" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>` 
+                : `<span style="color:gray;">Protected</span>`;
+
+            tableBody.innerHTML += `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 15px;">${user.name}</td>
+                    <td style="padding: 15px;">${user.email}</td>
+                    <td style="padding: 15px;">${user.contact || 'N/A'}</td>
+                    <td style="padding: 15px;">
+                        <span style="color:${user.role === 'landlord' ? '#ffd479' : '#4dfb4d'}">${user.role.toUpperCase()}</span>
+                    </td>
+                    <td style="padding: 15px;">${deleteBtn}</td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error("Fetch error:", err);
     }
-
-    const users = await res.json();
-    const container = document.getElementById("users");
-    container.innerHTML = "";
-
-    users.forEach(user => {
-      const card = document.createElement("div");
-      card.className = "property-card";
-
-      card.innerHTML = `
-        <h3>${user.name}</h3>
-        <p>Email: ${user.email}</p>
-        <p>Role: ${user.role}</p>
-        <p>Status: ${user.isBlocked ? "Blocked" : "Active"}</p>
-        <button onclick="toggleBlock('${user._id}')">
-          ${user.isBlocked ? "Unblock" : "Block"}
-        </button>
-      `;
-
-      container.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error while fetching users");
-  }
 }
 
-// -------------------------------
-// BLOCK / UNBLOCK USER
-// -------------------------------
-async function toggleBlock(userId) {
-  try {
-    await fetch(`${API_BASE}/api/admin/users/${userId}/block`, {
-      method: "PATCH",
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
+async function deleteUser(userId) {
+    if (!confirm("Are you sure? User ka saara data delete ho jayega!")) return;
 
-    fetchUsers();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to update user status");
-  }
+    try {
+        const res = await fetch(`${API_BASE}/admin/users/${userId}`, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (res.ok) {
+            alert("User removed successfully");
+            loadUsers(); // Refresh table
+        }
+    } catch (err) {
+        alert("Delete failed");
+    }
 }
 
-// -------------------------------
-// FETCH ALL PROPERTIES
-// -------------------------------
-async function fetchProperties() {
-  try {
-    const res = await fetch(`${API_BASE}/api/admin/properties`, {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
-
-    const properties = await res.json();
-    const container = document.getElementById("properties");
-    container.innerHTML = "";
-
-    properties.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "property-card";
-
-      card.innerHTML = `
-        <h3>${p.title}</h3>
-        <p>Location: ${p.location}</p>
-        <p>Price: ₹${p.price}</p>
-        <p>Owner: ${p.landlord?.name || "N/A"}</p>
-        <p>Status: ${p.isOccupied ? "Occupied" : "Available"}</p>
-        <button onclick="deleteProperty('${p._id}')">Delete</button>
-      `;
-
-      container.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error while fetching properties");
-  }
-}
-
-// -------------------------------
-// DELETE PROPERTY
-// -------------------------------
-async function deleteProperty(propertyId) {
-  if (!confirm("Are you sure you want to delete this property?")) return;
-
-  try {
-    await fetch(`${API_BASE}/api/admin/properties/${propertyId}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
-
-    fetchProperties();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete property");
-  }
-}
-
-// -------------------------------
-// LOGOUT
-// -------------------------------
 function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
+    localStorage.clear();
+    window.location.href = "login.html";
 }
 
-// -------------------------------
-// INITIAL LOAD
-// -------------------------------
-fetchUsers();
-fetchProperties();
+window.onload = loadUsers;
