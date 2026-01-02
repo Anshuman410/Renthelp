@@ -1,21 +1,21 @@
-// ==========================================
-// LANDLORD CLIENT LOGIC (Cloudinary Version)
-// ==========================================
+// =========================================================
+// LANDLORD CLIENT: Handles Property Management & Interests
+// =========================================================
 
 const API_BASE = "https://renthelp.onrender.com/api"; 
 const token = localStorage.getItem("token");
 
-// -------------------------------
-// 1. AUTH & ROLE PROTECTION
-// -------------------------------
+// ---------------------------------------------------------
+// 1. AUTH PROTECTION
+// ---------------------------------------------------------
 if (!token || localStorage.getItem("role") !== "landlord") {
-    alert("Unauthorized! Landlord login required.");
+    alert("Unauthorized access. Please login as a Landlord.");
     window.location.href = "login.html";
 }
 
-// -------------------------------
-// 2. LOAD LANDLORD'S PROPERTIES
-// -------------------------------
+// ---------------------------------------------------------
+// 2. LOAD LANDLORD PROPERTIES
+// ---------------------------------------------------------
 async function loadMyProperties() {
     try {
         const res = await fetch(`${API_BASE}/properties/landlord/my-properties`, {
@@ -35,7 +35,7 @@ async function loadMyProperties() {
         container.innerHTML = "";
 
         if (properties.length === 0) {
-            container.innerHTML = "<p style='color: #ccc;'>No properties listed yet. Add your first one above!</p>";
+            container.innerHTML = "<p style='color: #ccc;'>You haven't listed any properties yet.</p>";
             return;
         }
 
@@ -43,10 +43,8 @@ async function loadMyProperties() {
             const card = document.createElement("div");
             card.className = "property-card";
             
-            // Note: Using imageUrl from Cloudinary
             card.innerHTML = `
-                <img src="${p.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image+Available'}" 
-                     alt="Property" 
+                <img src="${p.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image'}" 
                      style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
                 <h3 style="color: #ffd479; margin-bottom: 8px;">${p.title}</h3>
                 <p><b>📍 Location:</b> ${p.location}</p>
@@ -54,20 +52,59 @@ async function loadMyProperties() {
                 <p><b>📊 Status:</b> ${p.isOccupied ? '<span style="color: #ff4d4d;">Occupied</span>' : '<span style="color: #4dfb4d;">Available</span>'}</p>
                 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button onclick="viewInterested('${p._id}')" style="flex:1; padding: 8px; font-size: 0.8rem;">Interests</button>
-                    <button onclick="deleteProperty('${p._id}')" style="flex:1; background: #ff4d4d; color: #fff; padding: 8px; font-size: 0.8rem; border: none; border-radius: 4px;">Delete</button>
+                    <button onclick="viewInterested('${p._id}')" style="flex:1; padding: 10px; font-weight: bold; cursor: pointer;">View Interests</button>
+                    <button onclick="deleteProperty('${p._id}')" style="flex:1; background: #ff4d4d; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
                 </div>
             `;
             container.appendChild(card);
         });
     } catch (err) {
-        console.error("LOAD ERROR:", err);
+        console.error("LOAD PROPERTIES ERROR:", err);
     }
 }
 
-// -------------------------------
-// 3. ADD PROPERTY (WITH IMAGE)
-// -------------------------------
+// ---------------------------------------------------------
+// 3. VIEW INTERESTED TENANTS (Updated for Contact Info)
+// ---------------------------------------------------------
+async function viewInterested(propertyId) {
+    try {
+        const res = await fetch(`${API_BASE}/interests/property/${propertyId}`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message || "Could not fetch interests.");
+            return;
+        }
+
+        if (data.length === 0) {
+            alert("No tenants have expressed interest yet.");
+            return;
+        }
+
+        // ✨ Building the list with Tenant's Name, Email, and Contact Number
+        let list = "Interested Tenants List:\n\n";
+        data.forEach((item, idx) => {
+            if (item.tenant) {
+                list += `--- Tenant #${idx + 1} ---\n`;
+                list += `👤 Name: ${item.tenant.name}\n`;
+                list += `📧 Email: ${item.tenant.email}\n`;
+                list += `📞 Contact: ${item.tenant.contact || 'Not available'}\n\n`; // ✨ Showing contact
+            }
+        });
+
+        alert(list);
+    } catch (err) {
+        console.error("VIEW INTEREST ERROR:", err);
+        alert("Failed to load interested tenants.");
+    }
+}
+
+// ---------------------------------------------------------
+// 4. ADD PROPERTY WITH IMAGE UPLOAD
+// ---------------------------------------------------------
 async function addProperty() {
     const title = document.getElementById("title").value.trim();
     const location = document.getElementById("location").value.trim();
@@ -76,11 +113,10 @@ async function addProperty() {
     const imageInput = document.getElementById("propertyImage");
 
     if (!title || !location || !price) {
-        alert("Please fill Title, Location, and Price.");
+        alert("Title, Location, and Price are required.");
         return;
     }
 
-    // ✨ FormData is used to handle file uploads
     const formData = new FormData();
     formData.append("title", title);
     formData.append("location", location);
@@ -92,69 +128,37 @@ async function addProperty() {
     }
 
     try {
-        // Show loading state
-        const btn = document.querySelector(".btn-primary");
+        const btn = document.querySelector(".btn-primary") || { innerText: "" };
         const originalText = btn.innerText;
-        btn.innerText = "Uploading to Cloud...";
+        btn.innerText = "Uploading...";
         btn.disabled = true;
 
         const res = await fetch(`${API_BASE}/properties`, {
             method: "POST",
-            headers: {
-                "Authorization": "Bearer " + token
-                // NOTE: Content-Type header is NOT set when using FormData
-            },
+            headers: { "Authorization": "Bearer " + token },
             body: formData
         });
 
-        const data = await res.json();
-
         if (res.ok) {
-            alert("Property listed successfully with image!");
+            alert("Property listed successfully!");
             window.location.reload(); 
         } else {
-            alert(data.message || "Failed to upload property");
+            const errorData = await res.json();
+            alert(errorData.message || "Failed to add property.");
             btn.innerText = originalText;
             btn.disabled = false;
         }
     } catch (err) {
-        console.error("UPLOAD ERROR:", err);
-        alert("Server error. Check if your backend is running.");
+        console.error("ADD PROPERTY ERROR:", err);
+        alert("Server error. Please try again.");
     }
 }
 
-// -------------------------------
-// 4. VIEW INTERESTED TENANTS
-// -------------------------------
-async function viewInterested(propertyId) {
-    try {
-        const res = await fetch(`${API_BASE}/interests/property/${propertyId}`, {
-            headers: { "Authorization": "Bearer " + token }
-        });
-        const data = await res.json();
-
-        if (data.length === 0) {
-            alert("No one has shown interest in this property yet.");
-            return;
-        }
-
-        let list = "Interested Tenants:\n\n";
-        data.forEach((item, idx) => {
-            if (item.tenant) {
-                list += `${idx + 1}. ${item.tenant.name} (${item.tenant.email})\n`;
-            }
-        });
-        alert(list);
-    } catch (err) {
-        console.error("INTEREST FETCH ERROR:", err);
-    }
-}
-
-// -------------------------------
+// ---------------------------------------------------------
 // 5. DELETE PROPERTY
-// -------------------------------
+// ---------------------------------------------------------
 async function deleteProperty(id) {
-    if (!confirm("Are you sure you want to delete this listing permanently?")) return;
+    if (!confirm("Are you sure you want to delete this listing?")) return;
 
     try {
         const res = await fetch(`${API_BASE}/properties/${id}`, {
@@ -163,7 +167,7 @@ async function deleteProperty(id) {
         });
 
         if (res.ok) {
-            alert("Listing removed.");
+            alert("Property deleted.");
             loadMyProperties();
         }
     } catch (err) {
@@ -171,13 +175,13 @@ async function deleteProperty(id) {
     }
 }
 
-// -------------------------------
+// ---------------------------------------------------------
 // 6. LOGOUT
-// -------------------------------
+// ---------------------------------------------------------
 function logout() {
     localStorage.clear();
     window.location.href = "login.html";
 }
 
-// Initial load
+// Initial load on page entry
 window.onload = loadMyProperties;
