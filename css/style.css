@@ -1,30 +1,31 @@
 /* ==========================================
-   RENTHELP PREMIUM GLOBAL STYLES
+   RENTHELP MASTER STYLES - FULL FIX
    ========================================== */
 
 :root {
   --primary-gold: #c9a24d;
   --light-gold: #ffd479;
   --dark-bg: #0f0f0f;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
   --text-white: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
 body {
   background-color: var(--dark-bg);
   color: var(--text-white);
-  overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* --- Full Background Section --- */
+/* --- Background & Overlay --- */
 .full-bg {
   min-height: 100vh;
   background-size: cover;
@@ -33,69 +34,41 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-.full-bg::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1;
 }
 
 .overlay-content {
-  position: relative;
-  z-index: 2;
   width: 100%;
   max-width: 1200px;
-  padding: 20px;
+  padding: 80px 20px 40px; /* Space for fixed navbar */
+  z-index: 2;
 }
 
-/* --- Glassmorphism Cards --- */
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 40px;
-  text-align: center;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  max-width: 500px;
-  margin: 0 auto;
-  animation: fadeIn 0.8s ease-out;
-}
-
-.extra-large {
-  max-width: 1000px;
-}
-
-/* --- Navbar Styling --- */
+/* --- Fixed Navbar --- */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 5%;
-  background: rgba(15, 15, 15, 0.95);
+  padding: 15px 5%;
+  background: rgba(15, 15, 15, 0.9);
+  backdrop-filter: blur(10px);
   position: fixed;
   top: 0; width: 100%;
-  z-index: 100;
+  z-index: 1000;
   border-bottom: 1px solid var(--glass-border);
 }
 
 .logo {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--light-gold);
-  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 nav a {
   color: var(--text-white);
   text-decoration: none;
   margin-left: 20px;
-  font-weight: 500;
+  font-size: 0.9rem;
   transition: 0.3s;
 }
 
@@ -103,129 +76,146 @@ nav a:hover {
   color: var(--primary-gold);
 }
 
-/* --- Form Elements --- */
+/* --- Glassmorphism Cards --- */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  margin-bottom: 30px;
+  animation: fadeIn 0.6s ease;
+}
+
+.extra-large { max-width: 1100px; margin: 0 auto; }
+
+/* --- Search Box & Input Fixes (VISIBILITY FIX) --- */
+.search-container {
+  display: flex;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 40px;
+  border: 1px solid var(--glass-border);
+}
+
 input, select, textarea {
   width: 100%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.3) !important; /* Darker background for better contrast */
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  color: white;
+  border-radius: 10px;
+  color: #ffffff !important; /* Force white text */
+  font-size: 1rem;
   outline: none;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+}
+
+/* Critical Fix: Placeholder Color */
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1;
 }
 
 input:focus {
   border-color: var(--primary-gold);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 10px rgba(201, 162, 77, 0.2);
 }
 
+/* --- Buttons --- */
 .btn-primary {
-  background: var(--primary-gold);
-  color: black;
+  background: linear-gradient(135deg, var(--primary-gold), var(--light-gold));
+  color: #000;
   font-weight: 700;
   border: none;
-  padding: 14px;
-  width: 100%;
-  border-radius: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
   cursor: pointer;
-  margin-top: 15px;
-  transition: 0.3s ease;
+  transition: 0.3s;
+  text-transform: uppercase;
+  font-size: 0.9rem;
 }
 
 .btn-primary:hover {
-  background: var(--light-gold);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(201, 162, 77, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(201, 162, 77, 0.3);
 }
 
 /* --- Property Grid & Cards --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-  padding: 20px 0;
+  gap: 30px;
 }
 
 .property-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--glass-border);
-  border-radius: 15px;
+  border-radius: 20px;
   overflow: hidden;
-  transition: 0.3s;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .property-card:hover {
-  transform: translateY(-10px);
+  transform: scale(1.03);
   border-color: var(--primary-gold);
+  background: rgba(255, 255, 255, 0.07);
 }
 
-/* ==========================================
-   ✨ STYLISH MODAL (POPUP) ANIMATIONS
-   ========================================== */
+.property-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--glass-border);
+}
 
+.card-content { padding: 20px; }
+
+/* --- Table Styles (For Admin) --- */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+th { color: var(--light-gold); padding: 15px; text-align: left; border-bottom: 2px solid var(--glass-border); }
+td { padding: 15px; background: rgba(255,255,255,0.02); }
+tr:hover td { background: rgba(255,255,255,0.05); }
+
+/* --- Stylish Modal --- */
 .modal {
   display: none;
   position: fixed;
   z-index: 2000;
   left: 0; top: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px); /* Deep blur effect */
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(15px);
   animation: fadeIn 0.4s ease;
 }
 
 .modal-content {
-  background: #141414;
-  margin: 5% auto;
+  background: #111;
+  margin: 8% auto;
   padding: 40px;
   border: 1px solid var(--primary-gold);
   width: 90%;
   max-width: 550px;
-  border-radius: 25px;
-  color: white;
-  position: relative;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.tc-body {
-  max-height: 350px;
-  overflow-y: auto;
-  margin: 20px 0;
-  padding-right: 15px;
-  text-align: left;
-  line-height: 1.7;
-}
-
-/* Custom Scrollbar for Modal */
-.tc-body::-webkit-scrollbar {
-  width: 6px;
-}
-.tc-body::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
-}
-.tc-body::-webkit-scrollbar-thumb {
-  background: var(--primary-gold);
-  border-radius: 10px;
+  border-radius: 30px;
+  animation: slideUp 0.5s ease;
 }
 
 /* --- Animations --- */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-@keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Responsive Fixes */
+/* --- Responsive --- */
 @media (max-width: 768px) {
-  .logo { font-size: 1.4rem; }
-  .glass-card { padding: 25px; }
-  .modal-content { margin: 15% auto; padding: 25px; }
+  .search-container { flex-direction: column; }
+  .navbar { padding: 10px 20px; }
+  .overlay-content { padding-top: 100px; }
 }
