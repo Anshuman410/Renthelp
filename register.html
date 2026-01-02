@@ -4,96 +4,104 @@
   <meta charset="UTF-8" />
   <title>Register | RentHelp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ✨ T&C Modal Styles */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; top: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.85); 
+      backdrop-filter: blur(8px);
+    }
+    .modal-content {
+      background: #1a1a1a; 
+      margin: 10% auto; 
+      padding: 30px; 
+      border: 1px solid #ffd479; 
+      width: 90%; max-width: 500px; 
+      border-radius: 15px; 
+      color: white;
+      box-shadow: 0 0 20px rgba(255, 212, 121, 0.2);
+    }
+    .tc-body {
+      max-height: 300px; 
+      overflow-y: auto; 
+      margin: 20px 0; 
+      font-size: 0.95rem; 
+      line-height: 1.6; 
+      text-align: left;
+      padding-right: 10px;
+    }
+    .tc-body::-webkit-scrollbar { width: 5px; }
+    .tc-body::-webkit-scrollbar-thumb { background: #ffd479; border-radius: 10px; }
+  </style>
 </head>
 <body>
 
-  <!-- ================= NAVBAR ================= -->
-  <header class="navbar">
-    <div class="logo">RentHelp</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-    </nav>
-  </header>
-
-  <!-- ================= REGISTER SECTION ================= -->
-  <section class="full-bg"
-    style="background-image:url('https://images.unsplash.com/photo-1493809842364-78817add7ffb');">
-
+  <section class="full-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750');">
     <div class="overlay-content">
       <div class="glass-card">
+        <h1 style="color: #ffd479;">Create Account</h1>
+        <p style="color: #ccc; margin-bottom: 20px;">Join 5,000+ users on RentHelp</p>
 
-        <h2>Create Your Account</h2>
-        <p class="subtitle">Join RentHelp to find or manage rentals</p>
+        <div class="form-group">
+          <input type="text" id="name" placeholder="Full Name" required>
+          <input type="email" id="email" placeholder="Email Address" required>
+          <input type="password" id="password" placeholder="Password" required>
+          
+          <input type="text" id="contact" placeholder="Contact Number (10 Digits)" maxlength="10" required>
 
-        <input type="text" id="name" placeholder="Full Name" />
-        <input type="email" id="email" placeholder="Email Address" />
-        <input type="password" id="password" placeholder="Password (min 6 characters)" />
+          <select id="role">
+            <option value="tenant">I am a Tenant</option>
+            <option value="landlord">I am a Landlord</option>
+          </select>
 
-        <select id="role">
-          <option value="">Select Role</option>
-          <option value="tenant">Tenant</option>
-          <option value="landlord">Landlord</option>
-        </select>
+          <div style="text-align: left; margin: 15px 0; color: white; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="termsCheck" style="width: auto; margin: 0;"> 
+            <span>I agree to the <a href="javascript:void(0)" onclick="toggleModal(true)" style="color: #ffd479; text-decoration: underline;">Terms & Conditions</a></span>
+          </div>
 
-        <button onclick="register()">Register</button>
+          <button onclick="register()" class="btn-primary">Register Now</button>
+        </div>
 
-        <p style="margin-top:15px; text-align:center;">
-          Already have an account?
-          <a href="login.html">Login</a>
+        <p style="margin-top: 20px; color: #fff;">
+          Already have an account? <a href="login.html" style="color: #ffd479;">Login</a>
         </p>
-
       </div>
     </div>
   </section>
 
-  <!-- ================= SCRIPT ================= -->
+  <div id="termsModal" class="modal">
+    <div class="modal-content">
+      <h2 style="color: #ffd479; border-bottom: 1px solid rgba(255,212,121,0.3); padding-bottom: 10px;">Terms & Conditions</h2>
+      <div class="tc-body">
+        <p><b>1. User Verification:</b> You agree that all information provided (Name, Email, Contact) is accurate and belongs to you.</p>
+        <p><b>2. Data Sharing:</b> Tenants' contact numbers will be visible to Landlords only when an 'Expression of Interest' is submitted.</p>
+        <p><b>3. Platform Role:</b> RentHelp is a bridge between owners and tenants. We do not participate in legal rent agreements or payments.</p>
+        <p><b>4. Security:</b> Users are responsible for maintaining the confidentiality of their account passwords.</p>
+        <p><b>5. Fair Use:</b> Any fake listings or harassment will result in immediate account termination.</p>
+      </div>
+      <button onclick="toggleModal(false)" style="background: #ffd479; color: black; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">I Understand & Close</button>
+    </div>
+  </div>
+
+  <script src="js/auth.client.js"></script>
   <script>
-    const API_BASE = "https://renthelp.onrender.com";
+    // Toggle Modal Function
+    function toggleModal(show) {
+      document.getElementById('termsModal').style.display = show ? 'block' : 'none';
+    }
 
-    async function register() {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const role = document.getElementById("role").value;
-
-      if (!name || !email || !password || !role) {
-        alert("All fields are required");
-        return;
-      }
-
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters");
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/api/auth/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ name, email, password, role })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          alert(data.message || "Registration failed");
-          return;
-        }
-
-        alert("Registration successful! Please login.");
-        window.location.href = "login.html";
-
-      } catch (err) {
-        console.error(err);
-        alert("Server error");
+    // Close modal if user clicks outside the box
+    window.onclick = function(event) {
+      const modal = document.getElementById('termsModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
       }
     }
   </script>
-
 </body>
 </html>
