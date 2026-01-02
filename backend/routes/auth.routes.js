@@ -1,108 +1,85 @@
 const express = require("express");
+const router = express.Router();
+const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const User = require("../models/user.model");
-
-const router = express.Router();
-
-/* =========================
-   REGISTER (Tenant/Landlord)
-========================= */
+// ---------------------------------------------------------
+// REGISTER ROUTE: Handles New User Creation
+// ---------------------------------------------------------
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    // ✨ Destructuring name, email, password, contact, and role from request body
+    const { name, email, password, contact, role } = req.body;
 
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Check if user already exists in the database
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "User with this email already exists." });
     }
 
-    if (!["tenant", "landlord"].includes(role)) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-
+    // Hash the password for security before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    // Create a new User instance with the contact number
+    user = new User({
       name,
       email,
       password: hashedPassword,
-      role
+      contact, // ✨ Saving the contact number here
+      role: role || "tenant" // Default to tenant if role is not provided
     });
 
-    res.status(201).json({
-      message: "Registration successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
+    await user.save();
+    res.status(201).json({ message: "User registered successfully! You can now login." });
   } catch (err) {
-    console.error("REGISTER ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("REGISTRATION ERROR:", err);
+    res.status(500).json({ message: "Server error during registration." });
   }
 });
 
-/* =========================
-   LOGIN (JWT)
-========================= */
+// ---------------------------------------------------------
+// LOGIN ROUTE: Handles User Authentication
+// ---------------------------------------------------------
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ message: "Invalid email or password." });
     }
 
+    // Check if the user is blocked by the admin
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "Your account is blocked. Please contact support." });
+    }
+
+    // Validate password using bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid email or password." });
     }
 
+    // Generate a JWT Token for the session
     const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET, 
       { expiresIn: "1d" }
     );
 
+    // Send token and user info back to frontend
     res.json({
       token,
-      role: user.role   // ✅ VERY IMPORTANT
+      role: user.role,
+      name: user.name,
+      userId: user._id
     });
-
   } catch (err) {
-    res.status(500).json({ message: "Login error" });
-  }
-});
-
-
-/* =========================
-   GET CURRENT USER
-========================= */
-router.get("/me", async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.id).select("-password");
-    res.json(user);
-  } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ message: "Server error during login." });
   }
 });
 
 module.exports = router;
-
