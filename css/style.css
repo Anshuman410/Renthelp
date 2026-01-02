@@ -1,31 +1,32 @@
 /* ==========================================
-   RENTHELP MASTER STYLES - FULL FIX
+   RENTHELP LUXURY THEME - V2 (FINAL FIX)
    ========================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
 :root {
-  --primary-gold: #c9a24d;
-  --light-gold: #ffd479;
-  --dark-bg: #0f0f0f;
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --text-white: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.7);
+  --gold: #c9a24d;
+  --gold-light: #ffd479;
+  --bg-dark: #0a0a0a;
+  --glass: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --input-bg: rgba(0, 0, 0, 0.25);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
-  background-color: var(--dark-bg);
-  color: var(--text-white);
+  background-color: var(--bg-dark);
+  color: #fff;
   line-height: 1.6;
 }
 
-/* --- Background & Overlay --- */
+/* --- Background Engine --- */
 .full-bg {
   min-height: 100vh;
   background-size: cover;
@@ -34,188 +35,156 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 40px 20px;
 }
 
-.overlay-content {
-  width: 100%;
-  max-width: 1200px;
-  padding: 80px 20px 40px; /* Space for fixed navbar */
-  z-index: 2;
-}
-
-/* --- Fixed Navbar --- */
+/* --- Navbar (Fixed & Clean) --- */
 .navbar {
+  position: fixed;
+  top: 0; width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 5%;
-  background: rgba(15, 15, 15, 0.9);
+  padding: 15px 6%;
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
-  position: fixed;
-  top: 0; width: 100%;
   z-index: 1000;
   border-bottom: 1px solid var(--glass-border);
 }
 
 .logo {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: var(--light-gold);
-  text-transform: uppercase;
+  color: var(--gold-light);
+  letter-spacing: 1px;
 }
 
 nav a {
-  color: var(--text-white);
+  color: #fff;
   text-decoration: none;
-  margin-left: 20px;
+  margin-left: 25px;
   font-size: 0.9rem;
+  font-weight: 500;
   transition: 0.3s;
 }
 
-nav a:hover {
-  color: var(--primary-gold);
-}
+nav a:hover { color: var(--gold); }
 
-/* --- Glassmorphism Cards --- */
+/* --- Glassmorphism Container --- */
 .glass-card {
-  background: var(--glass-bg);
+  background: var(--glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  margin-bottom: 30px;
-  animation: fadeIn 0.6s ease;
-}
-
-.extra-large { max-width: 1100px; margin: 0 auto; }
-
-/* --- Search Box & Input Fixes (VISIBILITY FIX) --- */
-.search-container {
-  display: flex;
-  gap: 15px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 40px;
-  border: 1px solid var(--glass-border);
-}
-
-input, select, textarea {
+  border-radius: 25px;
+  padding: 45px;
   width: 100%;
-  padding: 14px 18px;
-  background: rgba(0, 0, 0, 0.3) !important; /* Darker background for better contrast */
+  max-width: 520px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.8s ease;
+}
+
+.extra-large { max-width: 1100px; }
+
+/* --- Inputs & Visibility Fix (Based on your Screenshots) --- */
+.form-group input, 
+.form-group select, 
+.form-group textarea,
+.search-container input {
+  width: 100%;
+  padding: 14px 20px;
+  margin: 12px 0;
+  background: var(--input-bg) !important;
   border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  color: #ffffff !important; /* Force white text */
+  border-radius: 12px;
+  color: #ffffff !important;
   font-size: 1rem;
   outline: none;
-  transition: all 0.3s ease;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Critical Fix: Placeholder Color */
+/* ✨ Fix for Placeholder Text (Very Important) */
 input::placeholder, textarea::placeholder {
-  color: var(--text-muted) !important;
-  opacity: 1;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 input:focus {
-  border-color: var(--primary-gold);
-  background: rgba(0, 0, 0, 0.5) !important;
-  box-shadow: 0 0 10px rgba(201, 162, 77, 0.2);
+  border-color: var(--gold-light);
+  background: rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 0 12px rgba(201, 162, 77, 0.2);
 }
 
 /* --- Buttons --- */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-gold), var(--light-gold));
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
   color: #000;
   font-weight: 700;
   border: none;
-  padding: 14px 28px;
-  border-radius: 10px;
+  padding: 15px;
+  width: 100%;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  margin-top: 15px;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: 0.4s;
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(201, 162, 77, 0.3);
+  box-shadow: 0 10px 20px rgba(201, 162, 77, 0.3);
 }
 
-/* --- Property Grid & Cards --- */
+/* --- Property Grid --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
+  padding: 20px 0;
 }
 
 .property-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   overflow: hidden;
-  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid var(--glass-border);
+  transition: 0.3s;
 }
 
 .property-card:hover {
-  transform: scale(1.03);
-  border-color: var(--primary-gold);
-  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
 }
 
-.property-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-bottom: 1px solid var(--glass-border);
-}
-
-.card-content { padding: 20px; }
-
-/* --- Table Styles (For Admin) --- */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-}
-
-th { color: var(--light-gold); padding: 15px; text-align: left; border-bottom: 2px solid var(--glass-border); }
-td { padding: 15px; background: rgba(255,255,255,0.02); }
-tr:hover td { background: rgba(255,255,255,0.05); }
-
-/* --- Stylish Modal --- */
+/* --- Modal Styling (T&C) --- */
 .modal {
   display: none;
   position: fixed;
   z-index: 2000;
   left: 0; top: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(15px);
-  animation: fadeIn 0.4s ease;
 }
 
 .modal-content {
   background: #111;
-  margin: 8% auto;
+  margin: 10% auto;
   padding: 40px;
-  border: 1px solid var(--primary-gold);
+  border: 1px solid var(--gold);
   width: 90%;
   max-width: 550px;
-  border-radius: 30px;
+  border-radius: 24px;
   animation: slideUp 0.5s ease;
 }
 
 /* --- Animations --- */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-/* --- Responsive --- */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .search-container { flex-direction: column; }
-  .navbar { padding: 10px 20px; }
-  .overlay-content { padding-top: 100px; }
+  .glass-card { padding: 30px 20px; }
+  .navbar { padding: 15px 20px; }
 }
