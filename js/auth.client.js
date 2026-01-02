@@ -1,88 +1,101 @@
-// ===============================
-// FINAL CORRECTED AUTH CLIENT LOGIC
-// ===============================
+// ==========================================
+// AUTH CLIENT LOGIC (Updated for Contact & T&C)
+// ==========================================
 
-const API_BASE = "https://renthelp.onrender.com"; 
+const API_BASE = "https://renthelp.onrender.com/api"; 
 
-/* ===============================
-   LOGIN
-=============================== */
+// ---------------------------------------------------------
+// REGISTER FUNCTION: Validates and sends data to backend
+// ---------------------------------------------------------
+async function register() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const contact = document.getElementById("contact").value.trim(); // ✨ New Contact Field
+  const role = document.getElementById("role").value;
+  const termsAccepted = document.getElementById("termsCheck").checked; // ✨ T&C Validation
+
+  // Basic Validation
+  if (!name || !email || !password || !contact) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  // 10-digit mobile number validation
+  const phoneRegex = /^[0-9]{10}$/;
+  if (!phoneRegex.test(contact)) {
+    alert("Please enter a valid 10-digit contact number.");
+    return;
+  }
+
+  // Terms & Conditions Check
+  if (!termsAccepted) {
+    alert("You must agree to the Terms & Conditions to register.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, contact, role }) // ✨ Sending contact to backend
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Registration successful! Redirecting to login...");
+      window.location.href = "login.html";
+    } else {
+      alert(data.message || "Registration failed.");
+    }
+  } catch (err) {
+    console.error("REGISTRATION ERROR:", err);
+    alert("Server error. Please try again later.");
+  }
+}
+
+// ---------------------------------------------------------
+// LOGIN FUNCTION: Handles session and role redirection
+// ---------------------------------------------------------
 async function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    alert("Email and password required");
+    alert("Please enter both email and password.");
     return;
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
+    const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
 
     const data = await res.json();
 
-    if (!res.ok) {
-      alert(data.message || "Login failed");
-      return;
-    }
-
-    /* ✅ DATA MAPPING ADJUSTED:
-       Your console log confirms the response is: { token: '...', role: '...' }
-       Accessing data.role directly is the correct way for your current backend response.
-    */
-    if (data.role) {
+    if (res.ok) {
+      // Store user session info in LocalStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("userId", data.userId);
 
-      // Redirect based on the role directly from 'data'
-      if (data.role === "tenant") {
-        window.location.href = "tenant-dashboard.html";
+      // Redirect based on user role
+      if (data.role === "admin") {
+        window.location.href = "admin.html";
       } else if (data.role === "landlord") {
         window.location.href = "landlord-dashboard.html";
-      } else if (data.role === "admin") {
-        window.location.href = "admin.html";
+      } else {
+        window.location.href = "tenant-dashboard.html";
       }
     } else {
-      console.error("Role missing in response:", data);
-      alert("Login error: User role not received from server");
+      alert(data.message || "Login failed.");
     }
-
   } catch (err) {
-    console.error("LOGIN FETCH ERROR:", err);
-    alert("Server error: Unable to connect to backend.");
-  }
-}
-
-/* ===============================
-   LOGOUT
-=============================== */
-function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("role");
-  window.location.href = "login.html";
-}
-
-/* ===============================
-   PROTECT PAGES
-=============================== */
-function requireAuth(requiredRole = null) {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-
-  if (!token) {
-    alert("Please login");
-    window.location.href = "login.html";
-    return;
-  }
-
-  if (requiredRole && role !== requiredRole) {
-    alert("Unauthorized access");
-    window.location.href = "login.html";
+    console.error("LOGIN ERROR:", err);
+    alert("Server error. Please try again later.");
   }
 }
